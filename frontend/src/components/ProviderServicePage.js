@@ -1,0 +1,82 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import logo from '../assets/asas-logo.webp';
+export default function ProviderServicePage() {
+    const [name, setName] = useState('Diagnosis');
+    const [cost, setCost] = useState('');
+    const [resultFormat, setResultFormat] = useState('Text');
+    const [message, setMessage] = useState('');
+    const navigate = useNavigate();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setMessage('');
+        const providerId = localStorage.getItem('providerId');
+        if (!providerId || !name.trim() || !cost.trim() || !resultFormat.trim()) {
+            setMessage('❌ All fields are required.');
+            return;
+        }
+        try {
+            const res = await fetch('http://localhost:3000/api/provider/service', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ providerId, name, cost, resultFormat })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                navigate('/');
+            }
+            else {
+                setMessage(`❌ ${data.error || 'Service registration failed'}`);
+            }
+        }
+        catch (error) {
+            setMessage('❌ Server error');
+            console.error('Service registration error:', error);
+        }
+    };
+    return (_jsxs("div", { style: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
+            background: 'linear-gradient(135deg, #e3f2fd, #ffffff)',
+            fontFamily: 'Arial, sans-serif',
+            textAlign: 'center',
+            padding: '2rem'
+        }, children: [_jsxs("header", { style: { display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }, children: [_jsx("img", { src: logo, alt: "ASAS Logo", style: { width: '80px', marginRight: '1rem' } }), _jsx("h1", { style: { fontSize: '1.5rem', color: '#00796b' }, children: "BengaPrivacy" })] }), _jsx("h2", { style: { color: '#00796b', marginBottom: '1.5rem', fontSize: '2rem' }, children: "Describe Your Service" }), _jsxs("form", { onSubmit: handleSubmit, style: {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                    backgroundColor: '#ffffff',
+                    padding: '2rem 3rem',
+                    borderRadius: '16px',
+                    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)',
+                    width: '100%',
+                    maxWidth: '400px'
+                }, children: [_jsxs("select", { value: name, onChange: (e) => setName(e.target.value), style: {
+                            padding: '0.75rem',
+                            fontSize: '1rem',
+                            border: '1px solid #ccc',
+                            borderRadius: '8px'
+                        }, children: [_jsx("option", { value: "Diagnosis", children: "Diagnosis" }), _jsx("option", { value: "Treatment", children: "Treatment" }), _jsx("option", { value: "Medication", children: "Medication" })] }), _jsx("input", { type: "text", placeholder: "Enter cost", value: cost, onChange: (e) => setCost(e.target.value), style: {
+                            padding: '0.75rem',
+                            fontSize: '1rem',
+                            border: '1px solid #ccc',
+                            borderRadius: '8px'
+                        } }), _jsxs("select", { value: resultFormat, onChange: (e) => setResultFormat(e.target.value), style: {
+                            padding: '0.75rem',
+                            fontSize: '1rem',
+                            border: '1px solid #ccc',
+                            borderRadius: '8px'
+                        }, children: [_jsx("option", { value: "Text", children: "Text" }), _jsx("option", { value: "PDF", children: "PDF" })] }), _jsx("button", { type: "submit", style: {
+                            padding: '0.75rem',
+                            fontSize: '1rem',
+                            backgroundColor: '#00796b',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer'
+                        }, children: "Submit" }), message && _jsx("div", { style: { color: '#d32f2f', marginTop: '1rem' }, children: message })] })] }));
+}
